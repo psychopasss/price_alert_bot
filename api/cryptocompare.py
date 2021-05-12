@@ -21,7 +21,7 @@ class CryptoCompare():
     def get_symbols(self):
         syms = collections.OrderedDict()
         for page in range(0,10):        
-            url = f"{BASE_URL}/data/top/totalvol?limit=100&tsym=USD&page={page}"
+            url = f"{BASE_URL}/data/top/totalvol?limit=100&tsym=USDT&page={page}"
             print(f'loading symbols from network: {url}')
             time.sleep(0.3)
             r = self.session.get(url, headers={"authorization": "Apikey "+config.CC_API_KEY})

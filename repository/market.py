@@ -1,3 +1,4 @@
+from api.mxc_rest import RestApiMxc
 from time import time
 from datetime import datetime
 import math
@@ -7,6 +8,7 @@ from os import remove,listdir
 
 from cache import cache
 from api.binance_rest import RestApiBinance,CandleInterval
+from api.mxc_rest import RestApiMxc
 from draw_candles import DrawChart
 from api.cryptocompare import CryptoCompare
 
@@ -15,10 +17,11 @@ class MarketRepository(object):
         self.log = log
         self.binance_api = RestApiBinance()
         self.crypto_compare = CryptoCompare()
+        self.mxc_api = RestApiMxc()
 
-    @cache("market.symbols", 3600)
+    @cache("market.binance.symbols", 3600)
     def get_symbols(self):
-        symbols = self.crypto_compare.get_symbols()
+        symbols = self.binance_api.get_symbols()
         return symbols        
 
     TSYMS = ['BTC','USD','EUR','SEK','IRR','JPY','CNY','GBP','CAD','AUD','RUB','INR','USDT','ETH']
@@ -47,20 +50,17 @@ class MarketRepository(object):
     last_price_queries = {}
     price_partitions = {}
     def get_price(self, fsym, tsym):
-        symbols = self.get_symbols()
-        index=list(symbols.keys()).index(fsym)
-        partition= index//MarketRepository.PARTITION_SIZE 
+        symbol= fsym+tsym 
 
-        #print('index: {}, partition: {}, fsym: {}, tsym: {}'.format(index,partition, fsym,tsym))
-
-        if (partition not in MarketRepository.last_price_queries) or (time() - MarketRepository.last_price_queries[partition]> MarketRepository.CACHE_DURATION_PRICE):
-            index_start = max(0, partition * MarketRepository.PARTITION_SIZE - 2)
-            index_end = index_start + MarketRepository.PARTITION_SIZE
-            fsyms = list(symbols.keys())[index_start : index_end]
-            self.price_partitions[partition] = self.crypto_compare.get_price(fsyms, self.TSYMS)
-            MarketRepository.last_price_queries[partition] = time()
+        if (symbol not in MarketRepository.last_price_queries) or (time() - MarketRepository.last_price_queries[symbol]> MarketRepository.CACHE_DURATION_PRICE):
+            if fsym in ['PIG','SMARS','SAFEMOON']:
+                self.price_partitions[symbol] = float(self.mxc_api.get_price(fsym,tsym))
+            else:
+                self.price_partitions[symbol] = float(self.binance_api.get_price(fsym,tsym))
+            
+            MarketRepository.last_price_queries[symbol] = time()
         
-        return self.price_partitions[partition][fsym][tsym]
+        return self.price_partitions[symbol]
     
 
     def get_price_if_valid(self, fsym, tsym):
@@ -98,7 +98,7 @@ class MarketRepository(object):
     def get_chart_far(self, fsym, tsym):
         return self.get_chart(fsym, tsym, CandleInterval.FOUR_HOUR)
     def get_chart_near(self, fsym, tsym):
-        return self.get_chart(fsym, tsym, CandleInterval.FIFTEEN_MINUTE)        
+        return self.get_chart(fsym, tsym, CandleInterval.ONE_MINUTE)        
 
 
 

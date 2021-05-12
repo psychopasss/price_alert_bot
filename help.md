@@ -1,7 +1,7 @@
 **This bot supports following commands**
 
 **/price** or **/p**  
-Get the price for desired coin. The coin defaults to BTC and the base currency defaults to USD if not provided.  
+Get the price for desired coin. The coin defaults to SHIB and the base currency defaults to USDT if not provided.  
 
 Example:  
 `/price BTC`  

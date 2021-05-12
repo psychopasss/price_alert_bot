@@ -6,11 +6,9 @@ from cache import cache
 from candle import Candle
 
 
-class RestApiBinance:
-    BASE_URL="https://api.binance.com/"
-    PATH_CANDLESTICK_DATA = "api/v1/klines"
-    PATH_EXCHANGEINFO = "api/v1/exchangeInfo"
-    PATH_PRICE = "api/v3/ticker/price"
+class RestApiMxc:
+    BASE_URL="https://www.mxc.com/"
+    PATH_PRICE = "open/api/v2/market/ticker"
 
     def get_candles(self, symbol, interval, limit= 500):
         query_params = {}
@@ -51,20 +49,17 @@ class RestApiBinance:
         info = self.get_exchangeinfo()
         for s in info["symbols"]:
             symbols[s["baseAsset"]] = s["baseAsset"]
-        symbols["PIG"]="PIG"
-        symbols["SMARS"]="SMARS"
-        symbols["SAFEMOON"]="SAFEMOON"
         return symbols
 
-    def get_price(self, fsym,tsym):
+    def get_price(self, fsym, tsym):
         query_params = {}
-        query_params["symbol"] = fsym+tsym
+        query_params["symbol"] = fsym+"_"+tsym
         query=urllib.parse.urlencode(query_params)
 
         url = self.BASE_URL + self.PATH_PRICE
         print("requesting: "+ url + " - "+str(query))
         r = requests.request("GET", url,params= query)
-        return r.json()["price"]
+        return r.json()["data"][0]["last"]
             
 @unique
 class CandleInterval(Enum):

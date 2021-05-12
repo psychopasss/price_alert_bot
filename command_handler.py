@@ -40,7 +40,7 @@ class CommandHandler:
             elif command.startswith('lower') or command.startswith('higher'):
                 self.higher_lower(chatId, command)
             else:
-                self.api.sendMessage('Unknown command', chatId)
+                self.api.sendMessage('不支持的命令', chatId)
 
     def clear(self, chatId, command):
         if 'alerts' in self.db and chatId in self.db['alerts']:
@@ -66,8 +66,15 @@ class CommandHandler:
             return
 
         price = self.repository.get_price_if_valid(fsym, tsym)
-        resp = '1 {} = {} {}'.format(self.repository.get_symbols()[fsym], format_price(price),tsym)
-        chartFile = self.repository.get_chart_near(fsym, tsym)
+        
+        if fsym in ['PIG','SMARS','SAFEMOON']:
+            title='抹茶'
+        else:
+            title='币安'
+
+        resp = '1 {} = {} {} ({})'.format(self.repository.get_symbols()[fsym], format_price(price),tsym,title)
+        # chartFile = self.repository.get_chart_near(fsym, tsym)
+        chartFile = None
         if chartFile != None:
             self.api.sendPhoto(chartFile, resp, chatId)
         else:
@@ -142,8 +149,8 @@ class CommandHandler:
         else:
             alerts[fsym] = {op: {tsym: set([target])}}
         self.db['alerts'][chatId] = alerts
-        msg = 'Notification set for {} {} {} {}.'.format(
-            self.repository.get_symbols()[fsym], 'below' if op == 'LOWER' else 'above', format_price(target), tsym)
+        msg = '设置成功：当 {} {} {} {} 会提醒您.'.format(
+            self.repository.get_symbols()[fsym], '低于' if op == 'LOWER' else '高于', format_price(target), tsym)
         self.api.sendMessage(msg, chatId)
 
     @cache("cmd.Help", 100000)
@@ -160,12 +167,12 @@ class CommandHandler:
     def alerts(self, chatId, command):
         if 'alerts' in self.db and chatId in self.db['alerts']:
             alerts=self.db['alerts'][chatId]
-            msg = 'Current alerts:\n'
+            msg = '目前监控提醒：\n'
             for fsym in alerts:
                 for op in alerts[fsym]:
                     for tsym in alerts[fsym][op]:
                         for target in alerts[fsym][op][tsym]:
-                            msg='{}{} {} {} {}\n'.format(msg, self.repository.get_symbols()[fsym], op, target,tsym)
+                            msg='{}{} {} {} {}\n'.format(msg, self.repository.get_symbols()[fsym], '低于' if op == 'LOWER' else '高于', target,tsym)
             self.api.sendMessage(msg, chatId)
         else:
             self.api.sendMessage('No alert is set',chatId)

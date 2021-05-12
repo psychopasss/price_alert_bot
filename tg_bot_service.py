@@ -37,6 +37,9 @@ class TgBotService(object):
 
 
     def processAlerts(self):
+        rocket=u'\U0001F680' 
+        warn=u'\U0001F6A8' 
+        
         if 'alerts' not in self.db:
             return
         higher = 'HIGHER'
@@ -48,6 +51,7 @@ class TgBotService(object):
             for fsym in alerts[chatId]:
                 ops = alerts[chatId][fsym]
                 for op in ops:
+                    emoji = warn if op == lower else rocket
                     tsyms = ops[op]
                     for tsym in tsyms:
                         targets = tsyms[tsym]
@@ -55,8 +59,8 @@ class TgBotService(object):
                         for target in targets:
                             self.log.info(f"{chatId} {fsym}{tsym} = {price} target {op} {target} ")
                             if op == lower and price < target or op == higher and price > target:
-                                self.api.sendMessage('{} is {} {} at {} {}'.format(self.repository.get_symbols()[fsym],
-                                'below' if op == lower else 'above', format_price(target), format_price(price), tsym), chatId)
+                                self.api.sendMessage(emoji +' {} 当前价格：{} {} {} {}'.format(self.repository.get_symbols()[fsym],
+                                 format_price(price),'低于' if op == lower else '高于', format_price(target), tsym), chatId)
                                 toRemove.append((fsym, tsym, target, chatId, op))
 
         for tr in toRemove:
@@ -68,14 +72,14 @@ class TgBotService(object):
             self.last_update = self.db['last_update'] = update['update_id']
             if 'message' in update:
                 message = update['message']
-            elif "edited_message" in update['edited_message']:
+            elif "edited_message" in update:
                 message = update['edited_message']
             else:
                 self.log.error(f"no message in update: {update}")
                 return
 
             try:
-                self.processMessage(message)                
+               self.processMessage(message)                
             except:
                 self.log.exception(f"error processing update: {update}")
 
