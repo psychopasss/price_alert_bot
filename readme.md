@@ -53,13 +53,16 @@ See this message.
 
 Commands
 
-`price - get the price for desired coin
-p - same as /price
-chart - chart for a coin at timeframe (5m, 15m, 1h, 4h, 1d, 1w, etc)
-ch - same as /chart
-top - See the current prices of the top coins + market cap
-lower - get notified when price goes LOWER than specified number
-higher - get notified when price goes HIGHER than specified number
-alerts - get current alert
-clear - clear current alert
-help - get help about commands`
+`
+p - 获得所需货币的价格。货币默认为SHIB，基准货币默认为USDT(如果未指定)
+shib - 获取最新价格
+doge - 获取最新价格
+pig - 获取最新价格
+smars - 获取最新价格
+ch - 获取K线图 (5m, 15m, 1h, 4h, 1d, 1w, etc)
+top - 获取市值排行
+lower - 当指定货币的价格低于指定的数字时得到通知
+higher - 当指定货币的价格高于指定的数字时得到通知
+alerts - 列出所有的价格监控提醒
+clear - 清空所有的价格监控提醒
+help - 获取帮助`

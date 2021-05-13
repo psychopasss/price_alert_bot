@@ -23,7 +23,7 @@ class CommandHandler:
             text = message['text']
             chatId = message['chat']['id']
             command = text.partition('/')[2]
-            command = command.partition('@')[1]
+            command = command.partition('@')[0]
 
             self.log.info('handling command "{}"...'.format(command))
 
@@ -108,11 +108,16 @@ class CommandHandler:
                 tf = CandleInterval(parts[3])
 
 
+        if fsym in ['PIG','SMARS','SAFEMOON']:
+            title='抹茶'
+        else:
+            title='币安'
+
         chartFile = self.repository.get_chart(fsym, tsym, tf)
         if chartFile != None:
             price = self.repository.get_price_if_valid(fsym, tsym)
             if self.repository.isPricePairValid(fsym, tsym):
-                resp = '1 {} = {} {}'.format(self.repository.get_symbols()[fsym], format_price(price),tsym)
+                resp = '1 {} = {} {} ({})'.format(self.repository.get_symbols()[fsym], format_price(price),tsym,title)
             else:
                 resp = "Enjoy the binance chart!"
             self.api.sendPhoto(chartFile, resp, chatId)
