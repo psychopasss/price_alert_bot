@@ -1,50 +1,50 @@
-**This bot supports following commands**
+**这个机器人支持以下命令**
 
-**/price** or **/p**  
-Get the price for desired coin. The coin defaults to SHIB and the base currency defaults to USDT if not provided.  
+**/p**  
+获得所需货币的价格。货币默认为SHIB，基准货币默认为USDT(如果未指定)。
 
 Example:  
-`/price BTC`  
-`/price BTC USD`  
-`/price XMR BTC`  
+`/p BTC`  
+`/p BTC USD`  
+`/p XMR BTC`  
     
-**/chart** or **/ch**  
-Get chart for a coin at a timeframe. valid time frame values are: 1m (1 min), 3m, 5m, 15m, 30m, 1h (1 hour), 2h, 4h, 6h, 8h, 12h, 1d (1 day), 3d, 1w (1 week), 1M (1 month). The base currency defaults to USD and the time frame defaults to 1h if not provided.  
+**/ch**  
+获取K线图。有效时间单位为:1m(1分钟)、3m、5m、15m、30m、1h(1小时)、2h、4h、6h、8h、12h、1d(1天)、3d、1w(1周)、1m(1个月)。如果未指定，基准货币为USDT，时间单位为1分钟。
 
-Example:  
-`/chart` (defaults to BTC USD 1h)  
-`/chart BTC`  
-`/chart BTC USD`  
-`/chart XMR BTC`  
-`/chart BTC USD 1w`  
-`/chart BTC USD 1M`
+例如:  
+`/ch` (defaults to SHIB USDT 1m)  
+`/ch BTC`  
+`/ch BTC USD`  
+`/ch XMR BTC`  
+`/ch BTC USD 1w`  
+`/ch BTC USD 1M`
 
 **/top**  
-See the current prices of the top coins and market cap.
+获取市值排行
 
 **/lower**  
-Get notified when price of desired symbol goes LOWER than specified number. The base currency defaults to USD if not provided.  
+当指定货币的价格低于指定的数字时得到通知。如果没有指定基准货币，则基准货币为USDT。
 
-Example:
-`/lower ETH 25` (notify me when ETH price goes lower than 25 USD)  
+例如:
+`/lower ETH 25` (notify me when ETH price goes lower than 25 USDT)  
 `/lower BTC 1300 USD`  
 `/lower XMR 0.01 BTC` (notify me when XMR price goes lower than 0.01 BTC)  
 `/lower Nano 100 SAT` (notify me when Nano price goes lower than 100 Sats)  
 
 **/higher**  
-Get notified when price of desired symbol goes HIGHER than specified number.
+当指定货币的价格高于指定的数字时得到通知。如果没有指定基准货币，则基准货币为USDT。
 
-Example:s
-`/higher ETH 25` (notify me when ETH price goes higher than 25 USD)  
+例如:
+`/higher ETH 25` (notify me when ETH price goes higher than 25 USDT)  
 `/higher BTC 1300 USD`  
 `/higher XMR 0.01 BTC` (notify me when XMR price goes higher than 0.01 BTC)  
 `/higher Nano 100 SAT` (notify me when Nano price goes higher than 100 Sats)  
 
 **/alerts**  
-Get the current alerts.
+列出所有的价格监控提醒
 
 **/clear**  
-Clear current alerts.
+清空所有的价格监控提醒
 
 **/help**  
-See this message.
+获取帮助

@@ -23,6 +23,8 @@ class CommandHandler:
             text = message['text']
             chatId = message['chat']['id']
             command = text.partition('/')[2]
+            command = command.partition('@')[1]
+
             self.log.info('handling command "{}"...'.format(command))
 
             if command == 'start' or command == 'help':
@@ -33,6 +35,14 @@ class CommandHandler:
                 self.alerts(chatId, command)
             elif command=='clear':
                 self.clear(chatId, command)            
+            elif command=='shib':
+                self.price(chatId, "p SHIB")            
+            elif command=='doge':
+                self.price(chatId, "p DOGE")            
+            elif command=='pig':
+                self.price(chatId, "p PIG")            
+            elif command=='smars':
+                self.price(chatId, "p SMARS")            
             elif command.startswith('price') or command.startswith('p'):
                 self.price(chatId, command)
             elif command.startswith('chart') or command.startswith('ch'):
@@ -45,12 +55,12 @@ class CommandHandler:
     def clear(self, chatId, command):
         if 'alerts' in self.db and chatId in self.db['alerts']:
             self.db['alerts'].pop(chatId)
-        self.api.sendMessage('Done.',chatId)
+        self.api.sendMessage('已清空价格监控.',chatId)
 
     def price(self, chatId, command):
         parts = command.split()
         if len(parts) > 3:
-            self.api.sendMessage("Invalid command, enter 2 symbols, eg: BTC USD", chatId)
+            self.api.sendMessage("不支持的命令, 输入两个货币，例如： BTC USD", chatId)
             return
 
         fsym = config.DEFAULT_COIN
@@ -62,7 +72,7 @@ class CommandHandler:
             tsym = parts[2].upper()
 
         if not self.repository.isPricePairValid(fsym, tsym):
-            self.api.sendMessage("Invalid symbols {} {}".format(fsym,tsym), chatId)
+            self.api.sendMessage("不支持的货币 {} {}".format(fsym,tsym), chatId)
             return
 
         price = self.repository.get_price_if_valid(fsym, tsym)
@@ -83,7 +93,7 @@ class CommandHandler:
     def chart(self, chatId, command):
         parts = command.split()
         if len(parts) > 4:
-            self.api.sendMessage("Invalid command, enter 2 symbols, eg: BTC USD", chatId)
+            self.api.sendMessage("不支持的命令, 输入两个货币，例如： BTC USD", chatId)
             return
 
         fsym = config.DEFAULT_COIN
@@ -91,7 +101,7 @@ class CommandHandler:
             fsym = parts[1].upper()
 
         tsym = config.DEFAULT_FIAT
-        tf = CandleInterval.ONE_HOUR
+        tf = CandleInterval.ONE_MINUTE
         if len(parts) > 2:
             tsym = parts[2].upper()                
             if len(parts) > 3 and CandleInterval.has_value(parts[3]):
@@ -107,22 +117,22 @@ class CommandHandler:
                 resp = "Enjoy the binance chart!"
             self.api.sendPhoto(chartFile, resp, chatId)
         else:
-            self.api.sendMessage(f"no chart for {fsym} {tsym} {tf}", chatId)
+            self.api.sendMessage(f"未查询到行情图：{fsym} {tsym} {tf}", chatId)
 
     def higher_lower(self, chatId, command):
         parts = command.upper().split()
         if len(parts) < 3 or len(parts) > 4:
-            self.api.sendMessage("Invalid command", chatId)
+            self.api.sendMessage("不支持的命令", chatId)
             return
         op = parts[0]
         fsym = parts[1]
         if not fsym in self.repository.get_symbols().keys():
-            self.api.sendMessage('Invalid symbol "{}"'.format(fsym), chatId)
+            self.api.sendMessage('不支持的货币 "{}"'.format(fsym), chatId)
             return
         try:
             target = float(parts[2])
         except ValueError:
-            self.api.sendMessage('Invalid number "{}"'.format(parts[2]), chatId)
+            self.api.sendMessage('价格异常 "{}"'.format(parts[2]), chatId)
             return
         tsym = parts[3] if len(parts) > 3 else config.DEFAULT_FIAT
         if tsym == "SAT" or tsym== "SATS":
@@ -130,7 +140,7 @@ class CommandHandler:
             tsym="BTC"
 
         if tsym not in self.repository.TSYMS:
-            self.api.sendMessage('Invalid symbol {}'.format(tsym), chatId)
+            self.api.sendMessage('不支持的货币 {}'.format(tsym), chatId)
             return
 
         if 'alerts' not in self.db:
@@ -167,12 +177,12 @@ class CommandHandler:
     def alerts(self, chatId, command):
         if 'alerts' in self.db and chatId in self.db['alerts']:
             alerts=self.db['alerts'][chatId]
-            msg = '目前监控提醒：\n'
+            msg = '进行中的价格监控：\n'
             for fsym in alerts:
                 for op in alerts[fsym]:
                     for tsym in alerts[fsym][op]:
                         for target in alerts[fsym][op][tsym]:
-                            msg='{}{} {} {} {}\n'.format(msg, self.repository.get_symbols()[fsym], '低于' if op == 'LOWER' else '高于', target,tsym)
+                            msg='{}{} {} {} {}\n'.format(msg, self.repository.get_symbols()[fsym], '低于' if op == 'LOWER' else '高于', float(target),tsym)
             self.api.sendMessage(msg, chatId)
         else:
             self.api.sendMessage('No alert is set',chatId)
