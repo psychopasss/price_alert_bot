@@ -190,7 +190,7 @@ class CommandHandler:
                             msg='{}{} {} {} {}\n'.format(msg, self.repository.get_symbols()[fsym], '低于' if op == 'LOWER' else '高于', float(target),tsym)
             self.api.sendMessage(msg, chatId)
         else:
-            self.api.sendMessage('No alert is set',chatId)
+            self.api.sendMessage('目前没有货币处于价格监控中',chatId)
 
 
     CommandMap = {
