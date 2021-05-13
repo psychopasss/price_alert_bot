@@ -187,7 +187,7 @@ class CommandHandler:
                 for op in alerts[fsym]:
                     for tsym in alerts[fsym][op]:
                         for target in alerts[fsym][op][tsym]:
-                            msg='{}{} {} {} {}\n'.format(msg, self.repository.get_symbols()[fsym], '低于' if op == 'LOWER' else '高于', float(target),tsym)
+                            msg='{}{} {} {} {}\n'.format(msg, self.repository.get_symbols()[fsym], '低于' if op == 'LOWER' else '高于', '{0:.15f}'.format(target).rstrip("0"),tsym)
             self.api.sendMessage(msg, chatId)
         else:
             self.api.sendMessage('目前没有货币处于价格监控中',chatId)
