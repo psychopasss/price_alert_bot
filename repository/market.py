@@ -67,7 +67,10 @@ class MarketRepository(object):
         if not self.isPricePairValid(fsym, tsym):
             self.log.debug(f"price pair not valid {fsym} {tsym}")
         else:
-            return self.get_price(fsym, tsym)
+            try:
+                return self.get_price(fsym, tsym)
+            except Exception as error:
+                self.log.debug(f"获取价格异常, {error}")
 
     @cache("market.chart", 30, [1,2,3])
     def get_chart(self, fsym, tsym, tf):
